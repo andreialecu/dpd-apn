@@ -79,6 +79,7 @@ dpdapn.prototype.handle = function ( ctx, next ) {
     note.badge = this.config.badge ? parseInt(this.config.badge) : 1;
     note.sound = this.config.sound ? this.config.sound : "ping.aiff";
     note.alert = message;
+    if (ctx.body.payload) note.payload = ctx.body.payload;
 
     this.apnconn.pushNotification(note, myDevice);
 
