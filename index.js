@@ -9,7 +9,8 @@ function dpdapn(options){
     var options = {
         "cert":       this.config.cert,
         "key":        this.config.key,
-        "passphrase": this.config.passphrase
+        "passphrase": this.config.passphrase,
+        "production": true
     }
 
     this.apnconn = new apn.Connection(options);
@@ -59,11 +60,11 @@ dpdapn.basicDashboard = {
 
 dpdapn.prototype.handle = function ( ctx, next ) {
 
-    var device = "";
+    var devices = [];
     var message = "";
 
-    if(ctx.body && ctx.body.device){
-        device = ctx.body.device;
+    if(ctx.body && ctx.body.devices){
+        devices = ctx.body.devices;
     }
 
     if(ctx.body && ctx.body.message){
@@ -72,7 +73,6 @@ dpdapn.prototype.handle = function ( ctx, next ) {
         message = this.config.defaultMsg ? this.config.defaultMsg : "New message";
     }
 
-    var myDevice = new apn.Device(device);
     var note = new apn.Notification();
 
     note.expiry = Math.floor(Date.now() / 1000) + 360000;
@@ -81,7 +81,13 @@ dpdapn.prototype.handle = function ( ctx, next ) {
     note.alert = message;
     if (ctx.body.payload) note.payload = ctx.body.payload;
 
-    this.apnconn.pushNotification(note, myDevice);
+    try {
+      this.apnconn.pushNotification(note, devices);
+      ctx.done(null, {dispatched: true});
+    } catch (err) {
+      ctx.done(err);
+    }
+
 
 }
 
