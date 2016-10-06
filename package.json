@@ -8,7 +8,7 @@
     "url": "git://github.com/kvdmolen/dpd-apn.git"
   },
   "dependencies": {
-    "apn": "*"
+    "apn": "^1.0"
   },
   "bugs": {
     "url": "https://github.com/kvdmolen/dpd-apn/issues"
