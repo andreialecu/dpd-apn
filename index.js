@@ -41,6 +41,11 @@ dpdapn.basicDashboard = {
             description : 'Apple Passphrase'
         },
         {
+            name        : 'defaultTitle',
+            type        : 'string',
+            description : 'Default title'
+        },,
+        {
             name        : 'defaultMsg',
             type        : 'string',
             description : 'Default message'
@@ -78,7 +83,7 @@ dpdapn.prototype.handle = function ( ctx, next ) {
     note.expiry = Math.floor(Date.now() / 1000) + 360000;
     note.badge = this.config.badge ? parseInt(this.config.badge) : 1;
     note.sound = this.config.sound ? this.config.sound : "ping.aiff";
-    note.alert = message;
+    note.alert = { body: message, title: ctx.body.title || this.config.defaultTitle };
     if (ctx.body.payload) note.payload = ctx.body.payload;
 
     try {
