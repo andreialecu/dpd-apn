@@ -7,13 +7,17 @@ function dpdapn(options){
     Resource.apply(this, arguments);
 
     var options = {
-        "cert":       this.config.cert,
-        "key":        this.config.key,
-        "passphrase": this.config.passphrase,
+        token: {
+            "key": this.config.key,
+            "keyId": this.config.keyId,
+            "teamId": this.config.teamId,
+        },
         "production": true
     }
 
-    this.apnconn = new apn.Connection(options);
+    if (this.config.key && this.config.keyId && this.config.teamId) {
+        this.apnconn = new apn.Provider(options);
+    }
 }
 
 util.inherits(dpdapn, Resource);
@@ -26,19 +30,24 @@ dpdapn.prototype.clientGeneration = true;
 dpdapn.basicDashboard = {
     settings: [
         {
-            name        : 'cert',
-            type        : 'string',
-            description : 'Certificate file location (/home/..)'
-        },
-        {
             name        : 'key',
             type        : 'string',
             description : 'Key file location (/home/..)'
         },
         {
-            name        : 'passphrase',
+            name        : 'keyId',
             type        : 'string',
-            description : 'Apple Passphrase'
+            description : 'Certificate Key ID'
+        },
+        {
+            name        : 'teamId',
+            type        : 'string',
+            description : 'Certificate Team ID'
+        },
+        {
+            name        : 'appId',
+            type        : 'string',
+            description : 'App ID'
         },
         {
             name        : 'defaultTitle',
@@ -64,7 +73,8 @@ dpdapn.basicDashboard = {
 }
 
 dpdapn.prototype.handle = function ( ctx, next ) {
-
+    if (!this.apnconn) return;
+    
     var devices = [];
     var message = "";
 
@@ -80,6 +90,7 @@ dpdapn.prototype.handle = function ( ctx, next ) {
 
     var note = new apn.Notification();
 
+    note.topic = this.config.appId;
     note.expiry = Math.floor(Date.now() / 1000) + 360000;
     note.badge = this.config.badge ? parseInt(this.config.badge) : 1;
     note.sound = this.config.sound ? this.config.sound : "ping.aiff";
@@ -87,7 +98,11 @@ dpdapn.prototype.handle = function ( ctx, next ) {
     if (ctx.body.payload) note.payload = ctx.body.payload;
 
     try {
-      this.apnconn.pushNotification(note, devices);
+      this.apnconn.send(note, devices).then(function(result) {
+        // don't wait for response'
+      }).catch(function(err) {
+        ctx.done(err);
+      });
       ctx.done(null, {dispatched: true});
     } catch (err) {
       ctx.done(err);

@@ -1,19 +1,19 @@
 {
   "name": "dpd-apn",
   "description": "APN Apple Push notifications for Deployd",
-  "version": "0.0.2",
-  "author": "Klaas van der Molen",
+  "version": "1.0.0",
+  "author": "Andrei Alecu",
   "repository": {
     "type": "git",
-    "url": "git://github.com/kvdmolen/dpd-apn.git"
+    "url": "git://github.com/andreialecu/dpd-apn.git"
   },
   "dependencies": {
-    "apn": "^1.0"
+    "apn": "^2.1.2"
   },
   "bugs": {
-    "url": "https://github.com/kvdmolen/dpd-apn/issues"
+    "url": "https://github.com/andreialecu/dpd-apn/issues"
   },
-  "homepage": "https://github.com/kvdmolen/dpd-apn",
+  "homepage": "https://github.com/andreialecu/dpd-apn",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
