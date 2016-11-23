@@ -100,10 +100,11 @@ dpdapn.prototype.handle = function ( ctx, next ) {
     try {
       this.apnconn.send(note, devices).then(function(result) {
         // don't wait for response'
+        ctx.done(null, {dispatched: true});
       }).catch(function(err) {
+        console.error('dpd-apn send error', JSON.stringify(err));
         ctx.done(err);
       });
-      ctx.done(null, {dispatched: true});
     } catch (err) {
       ctx.done(err);
     }
