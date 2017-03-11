@@ -94,7 +94,8 @@ dpdapn.prototype.handle = function ( ctx, next ) {
     note.expiry = Math.floor(Date.now() / 1000) + 360000;
     note.badge = this.config.badge ? parseInt(this.config.badge) : 1;
     note.sound = this.config.sound ? this.config.sound : "ping.aiff";
-    note.alert = { body: message, title: ctx.body.title || this.config.defaultTitle };
+    note.alert = { body: message, title: ctx.body.title || this.config.defaultTitle, subtitle: ctx.body.subtitle };
+
     if (ctx.body.payload) note.payload = ctx.body.payload;
 
     try {
