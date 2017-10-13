@@ -1,6 +1,8 @@
 var Resource = require('deployd/lib/resource');
 var util     = require('util');
 var apn      = require('apn');
+var _        = require('lodash');
+var async    = require('async');
 
 function dpdapn(options){
 
@@ -99,18 +101,23 @@ dpdapn.prototype.handle = function ( ctx, next ) {
     if (ctx.body.payload) note.payload = ctx.body.payload;
 
     try {
-      this.apnconn.send(note, devices).then(function(result) {
-        // don't wait for response'
-        ctx.done(null, {dispatched: true});
-      }).catch(function(err) {
-        console.error('dpd-apn send error', JSON.stringify(err));
-        ctx.done(err);
-      });
+        var deviceChunks = _.chunk(devices, 100);
+        var _this = this;
+        async.eachSeries(deviceChunks, function(devices, callback) {
+            _this.apnconn.send(note, devices).then(result => {
+                callback(null, result)
+            }).catch(callback);
+        }, function(err) {
+            if (err) {
+                console.error('dpd-apn send error', JSON.stringify(err));
+                ctx.done(err);
+            } else {
+                ctx.done(null, {dispatched: true});
+            }
+        });
     } catch (err) {
       ctx.done(err);
     }
-
-
 }
 
 module.exports = dpdapn;
