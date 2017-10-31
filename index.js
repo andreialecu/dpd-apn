@@ -1,6 +1,6 @@
 var Resource = require('deployd/lib/resource');
 var util     = require('util');
-var apn      = require('apn');
+var apn      = require('node-apn-http2');
 var _        = require('lodash');
 var async    = require('async');
 
@@ -101,20 +101,10 @@ dpdapn.prototype.handle = function ( ctx, next ) {
     if (ctx.body.payload) note.payload = ctx.body.payload;
 
     try {
-        var deviceChunks = _.chunk(devices, 100);
         var _this = this;
-        async.eachSeries(deviceChunks, function(devices, callback) {
-            _this.apnconn.send(note, devices).then(result => {
-                callback(null, result)
-            }).catch(callback);
-        }, function(err) {
-            if (err) {
-                console.error('dpd-apn send error', JSON.stringify(err));
-                ctx.done(err);
-            } else {
-                ctx.done(null, {dispatched: true});
-            }
-        });
+        _this.apnconn.send(note, devices).then(result => {
+            ctx.done(null, {dispatched: true});        
+        }).catch(ctx.done);
     } catch (err) {
       ctx.done(err);
     }
