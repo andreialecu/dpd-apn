@@ -55,7 +55,7 @@ dpdapn.basicDashboard = {
             name        : 'defaultTitle',
             type        : 'string',
             description : 'Default title'
-        },,
+        },
         {
             name        : 'defaultMsg',
             type        : 'string',
