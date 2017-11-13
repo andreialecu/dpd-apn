@@ -1,8 +1,6 @@
 var Resource = require('deployd/lib/resource');
 var util     = require('util');
 var apn      = require('node-apn-http2');
-var _        = require('lodash');
-var async    = require('async');
 
 function dpdapn(options){
 
